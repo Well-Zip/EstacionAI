@@ -31,8 +31,8 @@ EstacionAI é um projeto desenvolvido com o objetivo de utilizar Inteligência A
 ├── EstacionAI/             # Aplicação responsável pela lógica de negócios do estacionamento
 ├── manage.py               # Script de gerenciamento do Django
 ├── requirements.txt        # Requerimentos para rodar o projeto
-└── README.md      
-db.sqlite3      
+├── README.md      
+└──db.sqlite3      
 ```
 
 # 🚀 Como executar o projeto
