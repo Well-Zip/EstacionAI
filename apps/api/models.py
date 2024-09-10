@@ -1,8 +1,12 @@
 from django.db import models
+from django.forms import ValidationError
 from django.utils import timezone
 from django.db.models import PROTECT
 from datetime import timedelta
-from django.db.models import Q
+#from django.db.models import Q
+
+from rest_framework.response import Response
+from rest_framework import status
 # Create your models here.
 class Vagas(models.Model):
     vaga = models.CharField(max_length=4, verbose_name="Nome da Vaga", primary_key=True)
@@ -16,6 +20,7 @@ class Vagas(models.Model):
     class Meta:
         verbose_name = "Cadastro de Vaga"
         verbose_name_plural = "Cadastro de Vagas"
+        ordering = ["vaga"]
 
     
     def __str__(self):
@@ -54,12 +59,25 @@ class Estacionamento(models.Model):
     horario_Saida_Estimada = models.DateTimeField(verbose_name="Data e Hora de Saída Estimada", blank=True, null=True)
     horario_Saida = models.DateTimeField(verbose_name="Data e Hora de Saída", blank=True, null=True, editable=False)
 
+
+    def clean(self):
+        # Verificar se a vaga já está em uso em outro registro ativo (sem horario_Saida)
+        conflito = Estacionamento.objects.filter(
+            vaga_Ocupada=self.vaga_Ocupada,
+            horario_Saida__isnull=True
+        ).exclude(pk=self.pk).exists()
+
+        if conflito:
+            raise ValidationError(("A vaga já está ocupada por outro veículo."))
+        
     def save(self, *args, **kwargs):
+        
         # Ajuste do horário estimado de saída
         if not self.horario_Saida_Estimada:
             self.horario_Saida_Estimada = self.horario_Entrada + timedelta(minutes=4) 
         
-        vaga = Vagas.objects.get(vaga=self.vaga_Ocupada)
+        self.clean()
+        vaga = self.vaga_Ocupada
         vaga.em_uso = True
         vaga.save()
 
@@ -84,6 +102,7 @@ class Estacionamento(models.Model):
         historico.save()
         self.delete()
 
+    
     class Meta:
         verbose_name = "Estacionamento"
         verbose_name_plural = "Estacionamento"

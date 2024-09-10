@@ -29,10 +29,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(route.urls)),  # Inclui as rotas do DefaultRouter
     path('estacionamento_aespi/delete/<str:vaga>', EstacionamentoDelete.as_view(), name='estacionamento-delete'),
+    path('estacionamento_aespi/delete/vagas/all', EstacionamentoDeleteAll.as_view(), name='estacionamento-delete-all'),
     path('estacionamento_aespi/<str:vaga>', Estacionamento_Info.as_view(), name='estacionamento_info'),
     path('estacionamento_aespi/info/status', Estacionamento_Status.as_view(), name='estacionamento'),
     path('estacionamento_aespi/info/vagas', VagasCadastradas.as_view(), name='vagas'),
-    path('endpoint/', Hello_World.as_view(), name='endpoint_teste'),
+    path('endpoint', Hello_World.as_view(), name='endpoint_teste'),
 ]
 
 

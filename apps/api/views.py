@@ -7,6 +7,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Estacionamento,Vagas
 from django.shortcuts import get_object_or_404
+from .serializers import VagasSerializer
+
+
 
 class EstacionamentoDelete(APIView):
     def delete(self, request, vaga):
@@ -21,6 +24,22 @@ class EstacionamentoDelete(APIView):
             return Response({"error": f"A vaga {vaga} não está ocupada ou nao está cadastrada no sistema."}, status=status.HTTP_404_NOT_FOUND)
 
 
+class EstacionamentoDeleteAll(APIView):
+    def delete(self, request):
+    # Buscar todos os registros de estacionamento
+        estacionamentos = Estacionamento.objects.all()
+        
+        if not estacionamentos.exists():
+            return Response({"message": "Nenhuma vaga encontrada para deletar."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Iterar sobre cada estacionamento e salvar o histórico antes de deletar
+        for estacionamento in estacionamentos:
+            estacionamento.salvar_historico_deletar_estacionamento()  # Salvar histórico e liberar a vaga individualmente
+
+        # Após salvar o histórico de todos, deletar os registros
+        estacionamentos.delete()
+
+        return Response({"message": "Todas as vagas foram liberadas e salvas no histórico."}, status=status.HTTP_200_OK)
 
 
 class Estacionamento_Info(APIView):
@@ -81,7 +100,7 @@ class Estacionamento_Status(APIView):
 
         return Response(estacionamento_vagas)
         
-from .serializers import VagasSerializer
+
 
 class VagasCadastradas(APIView):
     def get(self, request):
