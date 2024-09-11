@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<style>
+    /* Estilos gerais */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #3F51B5;
+    color: white;
+    flex-shrink: 0;
+}
+
+header h1 {
+    font-size: 2rem;
+    margin: 0;
+}
+
+.subtitulo {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    color: #fff;
+}
+
+/* Legenda Estilizada */
+.legenda {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;  /* Aumentar o espaçamento acima da legenda */
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.legenda-item {
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.legenda-cor {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 1px solid #333;
+    border-radius: 3px;
+}
+
+/* Cores da Legenda */
+.livre {
+    background-color: #4CAF50; /* Verde para vaga livre */
+}
+
+.ocupada {
+    background-color: #FF5733; /* Vermelho para vaga ocupada */
+}
+
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-gap: 20px;
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.card {
+    color: white;
+    border-radius: 10px;
+    padding: 40px;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 150px;
+}
+
+
+
+.popup {
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 1rem;
+    display: none;
+    z-index: 1;
+    white-space: nowrap;
+    transform: translate(-50%, -100%);
+}
+
+.popup::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+
+</style>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EstacionAI - Vagas</title>
+</head>
+<body>
+    <header>
+        <h1>EstacionAI - Vagas</h1>    
+    </header>
+
+    <div class="legenda">
+        <div class="legenda-item">
+            <span class="legenda-cor livre"></span> Vaga Livre (Verde)
+        </div>
+        <div class="legenda-item">
+            <span class="legenda-cor ocupada"></span> Vaga Ocupada (Vermelho)
+        </div>
+    </div>
+
+    <div class="dashboard">
+
+
+        {% for vaga in vagas %}
+            {% if vaga.em_uso == True %}
+                <div class="card" style="background-color: #e71919;">{{vaga.vaga}}</div>
+            {% else %}
+                <div class="card" style="background-color: #4CAF50;">{{vaga.vaga}}</div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</body>
+</html>

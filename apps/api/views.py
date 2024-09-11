@@ -9,6 +9,14 @@ from .models import Estacionamento,Vagas
 from django.shortcuts import get_object_or_404
 from .serializers import VagasSerializer
 
+def home(request):
+      
+    vagas = Vagas.objects.all()
+    data = {
+        'vagas': vagas
+    }
+    print(data)
+    return render(request, "home.html", data)
 
 
 class EstacionamentoDelete(APIView):
@@ -48,8 +56,8 @@ class Estacionamento_Info(APIView):
         fuso_horario = pytz.timezone('America/Fortaleza')
 
         # Converte o horário de entrada e saída estimada para o fuso horário local
-        horario_entrada_local = estacionamento.horario_Entrada.astimezone(fuso_horario)
-        horario_saida_estimada_local = estacionamento.horario_Saida_Estimada.astimezone(fuso_horario)
+        #horario_entrada_local = estacionamento.horario_Entrada.astimezone(fuso_horario)
+        #horario_saida_estimada_local = estacionamento.horario_Saida_Estimada.astimezone(fuso_horario)
         # Adiciona 2 minutos ao horário de entrada
         estacionamento.horario_Saida_Estimada = estacionamento.horario_Saida_Estimada + datetime.timedelta(minutes=2)
         
@@ -100,7 +108,6 @@ class Estacionamento_Status(APIView):
 
         return Response(estacionamento_vagas)
         
-
 
 class VagasCadastradas(APIView):
     def get(self, request):

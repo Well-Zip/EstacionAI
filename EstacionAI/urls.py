@@ -26,8 +26,11 @@ route.register(r'vagas', VagasViewSet, basename='vagas')
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include(route.urls)),  # Inclui as rotas do DefaultRouter
+    path('', home ,name = "home"),  # Home Site
+    path('admin/', admin.site.urls), # Admin Django
+
+    #URLS API
+    path('api/', include(route.urls)),  # Inclui as rotas do DefaultRouter
     path('estacionamento_aespi/delete/<str:vaga>', EstacionamentoDelete.as_view(), name='estacionamento-delete'),
     path('estacionamento_aespi/delete/vagas/all', EstacionamentoDeleteAll.as_view(), name='estacionamento-delete-all'),
     path('estacionamento_aespi/<str:vaga>', Estacionamento_Info.as_view(), name='estacionamento_info'),
