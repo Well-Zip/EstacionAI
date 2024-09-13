@@ -10,5 +10,5 @@ class EstacionamentoSerializers(serializers.ModelSerializer):
 class VagasSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vagas
-        fields = ['vaga']  
+        fields = ['vaga','em_uso']  
 

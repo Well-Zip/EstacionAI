@@ -134,16 +134,49 @@ header h1 {
         </div>
     </div>
 
-    <div class="dashboard">
-
-
-        {% for vaga in vagas %}
-            {% if vaga.em_uso == True %}
-                <div class="card" style="background-color: #e71919;">{{vaga.vaga}}</div>
-            {% else %}
-                <div class="card" style="background-color: #4CAF50;">{{vaga.vaga}}</div>
-            {% endif %}
-        {% endfor %}
+    <div class="dashboard" id='vagas-dashboard'>
     </div>
+
+    <script>
+        function carregarVagas() {
+        const urlBase = window.location.origin;
+        const url = `${urlBase}/estacionamento_aespi/info/vagas`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                //console.log('Dados recebidos:', data); 
+                const dashboard = document.getElementById('vagas-dashboard');
+                dashboard.innerHTML = ''; // Limpa o conteúdo atual
+
+               
+                if (Array.isArray(data)) {
+                    data.forEach(vaga => {
+                        const vagaDiv = document.createElement('div');
+                        vagaDiv.classList.add('card');
+                        vagaDiv.textContent = vaga.vaga;
+
+                        if (vaga.em_uso) {
+                            vagaDiv.style.backgroundColor = '#e71919'; // Vermelho para ocupado
+                        } else {
+                            vagaDiv.style.backgroundColor = '#4CAF50'; // Verde para livre
+                        }
+
+                        dashboard.appendChild(vagaDiv);
+                    });
+                } 
+            })
+            .catch(error => {
+                console.error('Erro ao carregar vagas:', error);
+            });
+    }
+
+	//2 segundos
+    setInterval(carregarVagas, 2000);
+
+    // Carrega as vagas ao iniciar a página
+    carregarVagas();
+
+    </script>
 </body>
 </html>

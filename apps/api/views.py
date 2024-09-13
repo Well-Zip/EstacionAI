@@ -10,13 +10,7 @@ from django.shortcuts import get_object_or_404
 from .serializers import VagasSerializer
 
 def home(request):
-      
-    vagas = Vagas.objects.all()
-    data = {
-        'vagas': vagas
-    }
-    print(data)
-    return render(request, "home.html", data)
+    return render(request, "home.html")
 
 
 class EstacionamentoDelete(APIView):

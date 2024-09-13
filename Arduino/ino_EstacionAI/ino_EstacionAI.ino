@@ -1,9 +1,9 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <Wire.h>
-#include <LiquidCrystal_I2C.h>  // Certifique-se de usar a versão compatível com ESP8266
-#include <ArduinoJson.h>        // Biblioteca para lidar com JSON
-#include <HCSR04.h>
+#include <LiquidCrystal_I2C.h>  
+#include <ArduinoJson.h>        // Lib JSON
+#include <HCSR04.h>				// Lib Ultrasonic
 
 
 
@@ -16,19 +16,19 @@ const char* password = "12345678";
 // URL da API
 const char* serverName = "http://192.168.18.14:8000/estacionamento_aespi/info/status";
 
-// Variáveis de temporização
-unsigned long previousMillis = 0;
-const long interval = 10000;  // Intervalo de 10 segundos
 
-// Cria um objeto WiFiClient
+unsigned long previousMillis = 0;
+const long interval = 10000;  
+
+
 WiFiClient client;
 
 // Variáveis para armazenar os dados da API
 int qtd_total_de_vagas = 0;
 int qtd_vagas_em_uso = 0;
 int qtd_vagas_livres = 0;
-String vagas_disponiveis[15];  // Array para armazenar até 10 vagas disponíveis (ajuste se necessário)
-int num_vagas_disponiveis = 0; // Contador de vagas disponíveis
+String vagas_disponiveis[15];  
+int num_vagas_disponiveis = 0; 
 
 //Ultrasonic 
 const byte triggerPin = 12; //D6
@@ -44,7 +44,7 @@ void setup() {
 
   Serial.begin(115200);
 
-  // Conectar ao Wi-Fi
+  
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
@@ -61,33 +61,33 @@ void setup() {
   lcd.setCursor(3, 2);
   lcd.print("WIFI CONECTADO");
   
-  delay(2000);  // Espera para mostrar a mensagem no LCD
+  delay(2000);  
   
 }
 
 void loop() {
   
-  // Verifica se já passou o intervalo para fazer uma nova requisição
+  
   unsigned long currentMillis = millis();
   
   if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;  // Atualiza o último tempo de requisição
+    previousMillis = currentMillis; 
 
     // Iniciar a requisição HTTP
     if (WiFi.status() == WL_CONNECTED) {
       HTTPClient http;
       
-      // Faz a requisição usando WiFiClient e URL
+      
       http.begin(client, serverName);
-      int httpCode = http.GET();  // Faz a requisição GET
+      int httpCode = http.GET();  // 
 
-      // Verificar o código de retorno
+      
       if (httpCode > 0) {
         String payload = http.getString();  // Obter a resposta JSON
         //Serial.println(httpCode);
         //Serial.println(payload);
 
-        // Cria um buffer estático para armazenar os dados do JSON
+        
         StaticJsonDocument<256> doc;
         
         // Deserializa o JSON recebido
@@ -95,22 +95,22 @@ void loop() {
         
         if (!error) {
           
-          // Atribui os valores JSON às variáveis correspondentes
+          
           qtd_total_de_vagas = doc["qtd_total de vagas"];
           qtd_vagas_em_uso = doc["qtd_vagas_em_uso"];
           qtd_vagas_livres = doc["qtd_vagas_livres"];
 
-          // Limpa o array de vagas disponíveis
+          
           num_vagas_disponiveis = 0;
           
-          // Lê todas as vagas disponíveis e armazena no array
+          
           JsonArray vagas = doc["vagas_disponiveis"];
-          String vagas_formatadas = "";  // String para armazenar as vagas formatadas
+          String vagas_formatadas = "";  
           for (int i = 0; i < vagas.size(); i++) {
             vagas_disponiveis[i] = vagas[i].as<String>();
-            vagas_formatadas += vagas_disponiveis[i];  // Adiciona a vaga à string formatada
+            vagas_formatadas += vagas_disponiveis[i];  
             if (i < vagas.size() - 1) {
-              vagas_formatadas += ",";  // Adiciona vírgula entre as vagas
+              vagas_formatadas += ",";  
             }
             num_vagas_disponiveis++;
           }
