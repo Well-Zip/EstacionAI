@@ -64,7 +64,7 @@ class Estacionamento_Info(APIView):
     def get(self, request, vaga):
         try:
             # Busca o registro da vaga pelo parâmetro 'vaga'
-            estacionamento = get_object_or_404(Estacionamento, vaga_Ocupada=vaga.upper)
+            estacionamento = get_object_or_404(Estacionamento, vaga_Ocupada=vaga.upper())
             print(estacionamento)
             
             # Formata a resposta com as informações da vaga
