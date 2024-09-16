@@ -7,7 +7,8 @@ EstacionAI é um projeto desenvolvido com o objetivo de utilizar Inteligência A
 - **Gerenciamento de Vagas:** Controle de entrada e saída de veículos nas vagas do estacionamento.
 - **Histórico de Vagas:** Registro de dados históricos de ocupação de vagas, facilitando a análise de uso do estacionamento.
 - **Inteligência Artificial:** Futuramente, IA será integrada para auxiliar na determinação da disponibilidade de vagas e no gerenciamento eficiente.
-- **Interface Web:** Um aplicativo web que permitirá a interação com o sistema de forma intuitiva, consumindo a API para apresentar informações relevantes.
+- **Interface Web:** Um aplicativo web que permitirá a interação com o sistema de forma intuitiva, consumindo a API para apresentar as vagas disponiveis e ocupadas.
+- **Aplicativo Móvel:** Desenvolvimento de um aplicativo móvel utilizando FlutterFlow para proporcionar uma experiência de usuário aprimorada.
 
 ## Tecnologias Utilizadas
 
@@ -21,7 +22,7 @@ EstacionAI é um projeto desenvolvido com o objetivo de utilizar Inteligência A
   - Framework para consumir a API e exibir dados dinâmicos (futuro desenvolvimento)
 
 - **Inteligência Artificial:**
-  - Em desenvolvimento, será integrada para otimizar a ocupação de vagas.
+  - Em desenvolvimento, será integrada para otimizar e controlar a ocupação de vagas.
 
 ## Estrutura do Projeto
 
@@ -57,7 +58,7 @@ pip install -r requirements.txt
 ```
 ```python
 # Rodando o código 
-python manage.py makemigrations
+python manage.py makemigrations api
 
 python manage.py migrate
 
@@ -78,11 +79,14 @@ Aqui estão as principais rotas disponíveis na API desenvolvida em Django para 
 
 - **Deletar e Liberar Vaga:**  
   `DELETE http://127.0.0.1:8000/estacionamento_aespi/delete/<str:vaga>`  
-  Substitua `<str:vaga>` pelo nome da vaga. Essa rota utiliza o método **DELETE** e é responsável por deletar o registro da vaga e liberar a mesma no sistema.
+  Substitua `<str:vaga>` pelo nome da vaga. Essa rota utiliza o método **DELETE** e é responsável por deletar o registro da vaga, salvar no historico e liberar a mesma no sistema.
+
+  `DELETE http://127.0.0.1:8000/estacionamento_aespi/delete/all`  
+  Essa rota utiliza o método **DELETE** e é responsável por deletar todos os registro da vaga, salvar no historico e liberar a mesma no sistema.
 
 - **Informações da Vaga (GET e PUT):**  
   `GET | PUT http://127.0.0.1:8000/estacionamento_aespi/<str:vaga>`  
-  Substitua `<str:vaga>` pelo nome da vaga para obter ou atualizar informações da vaga ocupada. O método **GET** retorna os detalhes da vaga, enquanto o método **PUT** permite modificar, por exemplo, a data e hora de saída estimada.
+  Substitua `<str:vaga>` pelo nome da vaga para obter ou atualizar informações da vaga ocupada. O método **GET** retorna os detalhes da vaga, enquanto o método **PUT** permite modificar, a data e hora de saída estimada.
 
 - **Status Geral do Estacionamento:**  
   `GET http://127.0.0.1:8000/estacionamento_aespi/info/status`  
@@ -94,4 +98,4 @@ Aqui estão as principais rotas disponíveis na API desenvolvida em Django para 
 
 - **Hello World (Teste):**  
   `GET http://127.0.0.1:8000/endpoint/`  
-  Um endpoint básico que retorna uma resposta de "Hello World" para testar a configuração da API.
+  Um endpoint básico que retorna uma resposta de "Hello World" para testar a API.
