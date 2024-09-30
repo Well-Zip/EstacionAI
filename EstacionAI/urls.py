@@ -31,6 +31,7 @@ urlpatterns = [
 
     #URLS API
     path('api/', include(route.urls)),  # Inclui as rotas do DefaultRouter
+    path('estacionamento_aespi/', EstacionamentoCAD.as_view(), name='estacionamento-cad'),
     path('estacionamento_aespi/delete/<str:vaga>', EstacionamentoDelete.as_view(), name='estacionamento-delete'),
     path('estacionamento_aespi/delete/vagas/all', EstacionamentoDeleteAll.as_view(), name='estacionamento-delete-all'),
     path('estacionamento_aespi/<str:vaga>', Estacionamento_Info.as_view(), name='estacionamento_info'),

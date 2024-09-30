@@ -5,7 +5,11 @@
 #include <ArduinoJson.h>        // Lib JSON
 #include <HCSR04.h>				// Lib Ultrasonic
 
+#include <Servo.h>
 
+Servo myservo;  // Cria um objeto servo para controlar o motor
+
+int pos = 0; 
 
 // Configuração do LCD I2C: Endereço 0x27 e 16x2
 LiquidCrystal_I2C lcd(0x27, 20, 4);
@@ -36,6 +40,7 @@ const byte echoPin = 14; //D5
 UltraSonicDistanceSensor distanceSensor(triggerPin, echoPin);
 
 void setup() {
+  myservo.attach(2); 
   // Inicializa o LCD com I2C
   //Roxo - D2 - SDA
   // Branco - D1 SCL
@@ -99,7 +104,6 @@ void loop() {
           qtd_total_de_vagas = doc["qtd_total de vagas"];
           qtd_vagas_em_uso = doc["qtd_vagas_em_uso"];
           qtd_vagas_livres = doc["qtd_vagas_livres"];
-
           
           num_vagas_disponiveis = 0;
           
@@ -117,9 +121,9 @@ void loop() {
           
           // Exibe os dados no Serial Monitor
           
-          //Serial.println(qtd_total_de_vagas);
-          //Serial.println(qtd_vagas_em_uso);
-          //Serial.println(qtd_vagas_livres);
+          Serial.println(qtd_total_de_vagas);
+          Serial.println(qtd_vagas_em_uso);
+          Serial.println(qtd_vagas_livres);
           float distance = distanceSensor.measureDistanceCm();
           //Serial.print("Distancia em cm: ");
           //Serial.println(distance);
@@ -174,7 +178,36 @@ void loop() {
               delay(4000);
               lcd.clear();
 
-              //ADicionar Servo Motor Aqui
+              if(qtd_vagas_livres == 1){
+                //ADicionar Servo Motor Aqui
+                for (pos = 0; pos <= 180; pos += 1) {
+                  myservo.write(pos);              // Define a posição do servo
+                  delay(15);                       // Aguarda 15 ms para o servo se mover
+                }
+                
+                delay(5000);
+
+                // Gira o servo de 180 a 0 graus lentamente
+                for (pos = 180; pos >= 0; pos -= 1) {
+                  myservo.write(pos);              // Define a posição do servo
+                  delay(15);                       // Aguarda 15 ms para o servo se mover
+                }
+                qtd_vagas_livres+=1;
+              }else{
+                  //ADicionar Servo Motor Aqui
+                for (pos = 0; pos <= 180; pos += 1) {
+                  myservo.write(pos);              // Define a posição do servo
+                  delay(15);                       // Aguarda 15 ms para o servo se mover
+                }
+                
+                delay(5000);
+
+                // Gira o servo de 180 a 0 graus lentamente
+                for (pos = 180; pos >= 0; pos -= 1) {
+                  myservo.write(pos);              // Define a posição do servo
+                  delay(15);                       // Aguarda 15 ms para o servo se mover
+                }
+              }
             }else{
               lcd.clear();
               lcd.setCursor(5, 0);

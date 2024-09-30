@@ -1,16 +1,39 @@
 import datetime,pytz
+import json
 from django.utils import timezone
-from django.http import Http404
+
+from django.http import Http404, JsonResponse
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Estacionamento,Vagas
 from django.shortcuts import get_object_or_404
-from .serializers import VagasSerializer
+from .serializers import EstacionamentoSerializers, VagasSerializer
 
 def home(request):
     return render(request, "home.html")
+
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+class EstacionamentoCAD(APIView):
+    def post(self, request):
+        serializer = EstacionamentoSerializers(data=request.data)
+        
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                vaga = serializer.validated_data.get('vaga_Ocupada')
+                return Response({'detail': f'A vaga {vaga} foi ocupada com sucesso.'}, status=status.HTTP_201_CREATED)
+
+            except Exception as e:  # Capture a exceção específica, se possível
+                vaga = serializer.validated_data.get('vaga_Ocupada')
+                return Response({'detail': f'A vaga {vaga} já está sendo utilizada.'}, status=status.HTTP_409_CONFLICT)
+        
+        # Caso o serializer não seja válido, retorne um erro
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class EstacionamentoDelete(APIView):
@@ -47,12 +70,7 @@ class EstacionamentoDeleteAll(APIView):
 class Estacionamento_Info(APIView):
     def put(self, request, vaga):
         estacionamento = get_object_or_404(Estacionamento, vaga_Ocupada=vaga.upper())
-        fuso_horario = pytz.timezone('America/Fortaleza')
-
-        # Converte o horário de entrada e saída estimada para o fuso horário local
-        #horario_entrada_local = estacionamento.horario_Entrada.astimezone(fuso_horario)
-        #horario_saida_estimada_local = estacionamento.horario_Saida_Estimada.astimezone(fuso_horario)
-        # Adiciona 2 minutos ao horário de entrada
+        
         estacionamento.horario_Saida_Estimada = estacionamento.horario_Saida_Estimada + datetime.timedelta(minutes=2)
         
         # Salva o objeto com o novo horário de saída estimada
@@ -64,24 +82,27 @@ class Estacionamento_Info(APIView):
     def get(self, request, vaga):
         try:
             # Busca o registro da vaga pelo parâmetro 'vaga'
-            estacionamento = get_object_or_404(Estacionamento, vaga_Ocupada=vaga.upper)
+            estacionamento = get_object_or_404(Estacionamento, vaga_Ocupada=vaga.upper())
             print(estacionamento)
             
+
+            
+
+
             # Formata a resposta com as informações da vaga
             dados_vaga = {
                 "vaga_ocupada": str(estacionamento.vaga_Ocupada),
                 "placa": str(estacionamento.placa),
                 "Data Entrada" : str(estacionamento.horario_Entrada.date()),
-                "Horario Entrada" : str(estacionamento.horario_Entrada.strftime('%H:%M:%S')), 
-                "Data Saida Estimada" : str(estacionamento.horario_Saida_Estimada.date()),
-                "Horario Saida Estimada" : str(estacionamento.horario_Saida_Estimada.strftime('%H:%M:%S'))
+                "Horario Entrada": estacionamento.horario_Entrada.astimezone(timezone.get_current_timezone()).strftime('%H:%M:%S'),
+                "Data Saida Estimada": estacionamento.horario_Saida_Estimada.astimezone(timezone.get_current_timezone()).date(),
+                "Horario Saida Estimada": estacionamento.horario_Saida_Estimada.astimezone(timezone.get_current_timezone()).strftime('%H:%M:%S')
             }
         
             return Response(dados_vaga)
             
         except Http404:
             return Response({"error": f"A vaga {vaga} não está ocupada ou não está cadastrada no sistema."}, status=status.HTTP_404_NOT_FOUND)
-        
 #Consultar Vagas Disponiveis 
 class Estacionamento_Status(APIView):
     def get(self, request):
