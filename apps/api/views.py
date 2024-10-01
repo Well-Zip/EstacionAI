@@ -14,9 +14,16 @@ from .serializers import EstacionamentoSerializers, VagasSerializer
 def home(request):
     return render(request, "home.html")
 
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
+
+def desocupar_all():
+    vagas = Vagas.objects.all()
+    for vaga in vagas:
+        vaga.em_uso = False 
+        vaga.save()
+
+
+
+
 
 class EstacionamentoCAD(APIView):
     def post(self, request):
@@ -50,6 +57,10 @@ class EstacionamentoDelete(APIView):
 
 
 class EstacionamentoDeleteAll(APIView):
+    def get(self,request):
+        desocupar_all()
+        return Response({"message": "Todas as vagas foram liberadas"}, status=status.HTTP_200_OK)
+
     def delete(self, request):
     # Buscar todos os registros de estacionamento
         estacionamentos = Estacionamento.objects.all()
@@ -60,6 +71,8 @@ class EstacionamentoDeleteAll(APIView):
         # Iterar sobre cada estacionamento e salvar o histórico antes de deletar
         for estacionamento in estacionamentos:
             estacionamento.salvar_historico_deletar_estacionamento()  # Salvar histórico e liberar a vaga individualmente
+        
+       
 
         # Após salvar o histórico de todos, deletar os registros
         estacionamentos.delete()

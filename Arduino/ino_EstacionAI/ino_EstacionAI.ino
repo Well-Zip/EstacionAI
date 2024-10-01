@@ -4,7 +4,6 @@
 #include <LiquidCrystal_I2C.h>  
 #include <ArduinoJson.h>        // Lib JSON
 #include <HCSR04.h>				// Lib Ultrasonic
-
 #include <Servo.h>
 
 Servo myservo;  // Cria um objeto servo para controlar o motor
